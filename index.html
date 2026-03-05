@@ -2,629 +2,474 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#E8622A">
 <title>脳トレ広場</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #FFF8F0;
-    --card: #FFFFFF;
-    --primary: #E8622A;
-    --primary-dark: #C44E1E;
-    --secondary: #3A8FBF;
-    --secondary-dark: #2A6F9F;
-    --green: #4CAF50;
-    --green-dark: #388E3C;
-    --gold: #F5A623;
-    --text: #2C2C2C;
-    --text-light: #666666;
-    --shadow: 0 6px 20px rgba(0,0,0,0.12);
-    --shadow-lg: 0 10px 40px rgba(0,0,0,0.18);
-    --radius: 20px;
-    --radius-lg: 30px;
-  }
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
 
-  html {
-    touch-action: manipulation;
-  }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: #FFF8F0;
+  color: #2C2C2C;
+  user-select: none;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
 
-  body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 18px;
-    user-select: none;
-  }
+/* ===== FLUID VARIABLES ===== */
+:root {
+  --primary: #E8622A;
+  --primary-dk: #C44E1E;
+  --blue: #3A8FBF;
+  --green: #4CAF50;
+  --green-dk: #388E3C;
+  --gold: #F5A623;
+  --text: #2C2C2C;
+  --muted: #666;
+  --shadow: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.15);
+  --r:    clamp(10px, 2.5vw, 20px);
+  --r-lg: clamp(14px, 3vw,   26px);
 
-  /* ===== HEADER ===== */
-  header {
-    background: linear-gradient(135deg, var(--primary), #F07050);
-    color: white;
-    padding: 20px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: var(--shadow);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  header h1 {
-    font-size: 32px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-  }
-  header h1 span { font-size: 36px; }
-  .score-board {
-    background: rgba(255,255,255,0.25);
-    border-radius: 16px;
-    padding: 10px 20px;
-    text-align: center;
-  }
-  .score-board .label { font-size: 13px; opacity: 0.9; }
-  .score-board .value { font-size: 28px; font-weight: 900; }
+  --fs-xs:  clamp(10px, 2.2vw, 13px);
+  --fs-sm:  clamp(12px, 2.8vw, 16px);
+  --fs-md:  clamp(14px, 3.2vw, 18px);
+  --fs-lg:  clamp(16px, 3.8vw, 22px);
+  --fs-xl:  clamp(18px, 4.5vw, 28px);
+  --fs-2xl: clamp(22px, 5.5vw, 36px);
+  --fs-3xl: clamp(26px, 7vw,   48px);
+  --fs-4xl: clamp(30px, 9vw,   60px);
+  --fs-icon:clamp(28px, 7vw,   52px);
 
-  /* ===== SCREENS ===== */
-  .screen { display: none; padding: 30px 20px; max-width: 900px; margin: 0 auto; }
-  .screen.active { display: block; }
+  --sp-xs: clamp(4px,  1vw,   8px);
+  --sp-sm: clamp(6px,  1.5vw, 12px);
+  --sp-md: clamp(8px,  2vw,   16px);
+  --sp-lg: clamp(12px, 2.5vw, 22px);
+  --sp-xl: clamp(16px, 3vw,   28px);
+}
 
-  /* ===== HOME ===== */
-  .home-greeting {
-    text-align: center;
-    padding: 20px 0 30px;
-  }
-  .home-greeting h2 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 8px;
-  }
-  .home-greeting p {
-    font-size: 18px;
-    color: var(--text-light);
-  }
+/* ===== HEADER ===== */
+#appHeader {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--primary), #F07050);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-sm) var(--sp-lg);
+  padding-top: max(var(--sp-sm), env(safe-area-inset-top));
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+#appHeader h1 {
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+#appHeader h1 span { font-size: calc(var(--fs-xl) * 1.1); }
 
-  .game-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
-  }
+.score-board {
+  background: rgba(255,255,255,0.25);
+  border-radius: var(--r);
+  padding: var(--sp-xs) var(--sp-md);
+  text-align: center;
+  min-width: clamp(70px, 18vw, 110px);
+}
+.score-board .sb-label { font-size: var(--fs-xs); opacity: 0.9; }
+.score-board .sb-val   { font-size: var(--fs-xl); font-weight: 900; line-height: 1.1; }
 
-  .game-card {
-    background: var(--card);
-    border-radius: var(--radius-lg);
-    padding: 30px 20px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    border: 3px solid transparent;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .game-card:active { transform: scale(0.96); }
-  .game-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+/* ===== SCREEN (fills remaining height, no overflow) ===== */
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding: var(--sp-md) var(--sp-lg);
+  padding-bottom: max(var(--sp-md), env(safe-area-inset-bottom));
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+.screen.active { display: flex; }
 
-  .game-card.c1 { border-color: #E8622A33; }
-  .game-card.c2 { border-color: #3A8FBF33; }
-  .game-card.c3 { border-color: #4CAF5033; }
-  .game-card.c4 { border-color: #F5A62333; }
+.screen-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--sp-lg);
+}
 
-  .game-icon { font-size: 60px; margin-bottom: 12px; display: block; }
-  .game-card h3 { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
-  .game-card p { font-size: 15px; color: var(--text-light); line-height: 1.5; }
-  .game-card .badge {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 700;
-    color: white;
-  }
-  .c1 .badge { background: var(--primary); }
-  .c2 .badge { background: var(--secondary); }
-  .c3 .badge { background: var(--green); }
-  .c4 .badge { background: var(--gold); }
+/* ===== HOME ===== */
+.home-greeting {
+  text-align: center;
+  flex-shrink: 0;
+  padding: var(--sp-xs) 0 var(--sp-sm);
+}
+.home-greeting h2 { font-size: var(--fs-lg); font-weight: 700; color: var(--primary); }
+.home-greeting p  { font-size: var(--fs-sm); color: var(--muted); margin-top: 2px; }
 
-  /* ===== BUTTONS ===== */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 18px 36px;
-    border-radius: 50px;
-    font-size: 20px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    border: none;
-    transition: transform 0.12s, box-shadow 0.12s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn:active { transform: scale(0.95); }
-  .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(232,98,42,0.4); }
-  .btn-primary:hover { background: var(--primary-dark); }
-  .btn-secondary { background: var(--secondary); color: white; box-shadow: 0 4px 15px rgba(58,143,191,0.4); }
-  .btn-back { background: #F0F0F0; color: var(--text); }
-  .btn-back:hover { background: #E0E0E0; }
-  .btn-lg { padding: 22px 50px; font-size: 24px; }
-  .btn-full { width: 100%; }
+.game-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-sm);
+  flex: 1;
+  min-height: 0;
+}
+.game-card {
+  background: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--sp-md) var(--sp-sm);
+  text-align: center;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.12s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xs);
+  border: 2px solid transparent;
+}
+.game-card:active { transform: scale(0.95); }
+.game-card.c1 { border-color: #E8622A44; }
+.game-card.c2 { border-color: #3A8FBF44; }
+.game-card.c3 { border-color: #4CAF5044; }
+.game-card.c4 { border-color: #F5A62344; }
 
-  /* ===== GAME HEADER ===== */
-  .game-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-  .game-header h2 { font-size: 26px; font-weight: 900; flex: 1; }
-  .game-status {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 25px;
-    padding: 16px 24px;
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-  }
-  .status-item { text-align: center; flex: 1; }
-  .status-item .label { font-size: 13px; color: var(--text-light); }
-  .status-item .value { font-size: 26px; font-weight: 900; color: var(--primary); }
+.game-icon { font-size: var(--fs-icon); line-height: 1; }
+.game-card h3 { font-size: var(--fs-md); font-weight: 900; }
+.game-card p  { font-size: var(--fs-xs); color: var(--muted); line-height: 1.4; }
+.badge {
+  font-size: var(--fs-xs); font-weight: 700; color: #fff;
+  padding: 2px 10px; border-radius: 20px;
+}
+.c1 .badge { background: var(--primary); }
+.c2 .badge { background: var(--blue); }
+.c3 .badge { background: var(--green); }
+.c4 .badge { background: var(--gold); }
 
-  /* ===== FEEDBACK ===== */
-  .feedback {
-    text-align: center;
-    padding: 16px;
-    border-radius: var(--radius);
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    transition: all 0.3s;
-    min-height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .feedback.correct { background: #E8F5E9; color: var(--green); }
-  .feedback.wrong { background: #FFEBEE; color: #D32F2F; }
-  .feedback.empty { background: transparent; }
+.home-footer {
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: var(--r);
+  padding: var(--sp-sm) var(--sp-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  box-shadow: var(--shadow);
+  margin-top: var(--sp-sm);
+  font-size: var(--fs-sm);
+}
+.home-footer strong { font-size: var(--fs-lg); color: var(--primary); font-weight: 900; }
+.home-footer .hint  { margin-left: auto; font-size: var(--fs-xs); color: var(--muted); }
 
-  /* ===== RESULT ===== */
-  .result-box {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 40px 30px;
-    text-align: center;
-    box-shadow: var(--shadow-lg);
-    margin-bottom: 25px;
-  }
-  .result-box .emoji { font-size: 80px; margin-bottom: 15px; }
-  .result-box h3 { font-size: 32px; font-weight: 900; margin-bottom: 10px; }
-  .result-box .score { font-size: 60px; font-weight: 900; color: var(--primary); }
-  .result-box .detail { font-size: 18px; color: var(--text-light); margin-top: 10px; }
+/* ===== SHARED GAME PARTS ===== */
+.game-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  flex-shrink: 0;
+  margin-bottom: var(--sp-sm);
+}
+.game-topbar h2 { font-size: var(--fs-md); font-weight: 900; flex: 1; }
 
-  /* ===== GAME 1: 計算 ===== */
-  .calc-display {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    margin-bottom: 25px;
-  }
-  .calc-question {
-    font-size: 56px;
-    font-weight: 900;
-    color: var(--text);
-    margin-bottom: 20px;
-    letter-spacing: 4px;
-  }
-  .calc-answer-display {
-    font-size: 48px;
-    font-weight: 700;
-    color: var(--secondary);
-    min-height: 70px;
-    border-bottom: 4px solid var(--secondary);
-    padding-bottom: 10px;
-    min-width: 200px;
-    display: inline-block;
-  }
+.btn-back {
+  background: #EBEBEB;
+  border: none;
+  border-radius: 50px;
+  padding: var(--sp-xs) var(--sp-md);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-back:active { background: #D0D0D0; transform: scale(0.95); }
 
-  .numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-  .num-btn {
-    background: white;
-    border: 3px solid #E0E0E0;
-    border-radius: 18px;
-    padding: 22px 10px;
-    font-size: 28px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.1s;
-    color: var(--text);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-    -webkit-tap-highlight-color: transparent;
-  }
-  .num-btn:active { transform: scale(0.93); background: #F0F0F0; }
-  .num-btn.del { background: #FFF3E0; border-color: #FFB74D; color: #E65100; }
-  .num-btn.ok { background: var(--green); border-color: var(--green); color: white; font-size: 22px; }
-  .num-btn.ok:active { background: var(--green-dark); }
-  .num-btn.zero { grid-column: span 1; }
+.status-bar {
+  display: flex;
+  background: #fff;
+  border-radius: var(--r);
+  padding: var(--sp-xs) var(--sp-md);
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  margin-bottom: var(--sp-xs);
+}
+.status-item { flex: 1; text-align: center; }
+.status-item .s-label { font-size: var(--fs-xs); color: var(--muted); }
+.status-item .s-val   { font-size: var(--fs-lg); font-weight: 900; color: var(--primary); line-height: 1.2; }
 
-  /* ===== GAME 2: 記憶 ===== */
-  .memory-instruction {
-    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
-    border-radius: var(--radius);
-    padding: 20px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--secondary-dark);
-  }
-  .cards-grid {
-    display: grid;
-    gap: 12px;
-    margin-bottom: 20px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .cards-grid.size-4 { grid-template-columns: repeat(2, 1fr); }
-  .cards-grid.size-9 { grid-template-columns: repeat(3, 1fr); }
-  .cards-grid.size-12 { grid-template-columns: repeat(4, 1fr); }
-  .card-item {
-    aspect-ratio: 1;
-    border-radius: 18px;
-    font-size: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 4px solid transparent;
-    box-shadow: var(--shadow);
-    -webkit-tap-highlight-color: transparent;
-    position: relative;
-    overflow: hidden;
-  }
-  .card-item.hidden {
-    background: linear-gradient(135deg, #5C6BC0, #3F51B5);
-    color: white;
-    font-size: 36px;
-  }
-  .card-item.hidden::after { content: '?'; }
-  .card-item.hidden .emoji { display: none; }
-  .card-item.shown { background: #FFF9C4; border-color: #FFD54F; }
-  .card-item.matched { background: #E8F5E9; border-color: var(--green); cursor: default; }
-  .card-item.wrong-anim { animation: shake 0.4s ease; }
-  .card-item:active:not(.matched) { transform: scale(0.94); }
+.timer-wrap { flex-shrink: 0; margin-bottom: var(--sp-xs); }
+.timer-track { background: #E0E0E0; border-radius: 8px; height: clamp(8px,1.5vw,12px); overflow: hidden; }
+.timer-fill {
+  height: 100%; border-radius: 8px; background: var(--green);
+  transition: width 1s linear, background 0.4s;
+}
+.timer-fill.warn   { background: var(--gold); }
+.timer-fill.danger { background: var(--primary); }
 
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-8px); }
-    75% { transform: translateX(8px); }
-  }
+.progress-dots {
+  display: flex; justify-content: center; gap: clamp(4px,1vw,8px);
+  flex-wrap: wrap; flex-shrink: 0; margin-bottom: var(--sp-xs);
+}
+.dot {
+  width: clamp(10px,2vw,14px); height: clamp(10px,2vw,14px);
+  border-radius: 50%; background: #DDD; transition: background 0.2s;
+}
+.dot.done    { background: var(--green); }
+.dot.wrong   { background: var(--primary); }
+.dot.current { background: var(--blue); transform: scale(1.25); }
 
-  /* ===== GAME 3: 言葉 ===== */
-  .word-display {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 30px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-  }
-  .word-hint {
-    font-size: 18px;
-    color: var(--text-light);
-    margin-bottom: 10px;
-  }
-  .word-chars {
-    font-size: 48px;
-    font-weight: 900;
-    letter-spacing: 10px;
-    color: var(--text);
-    min-height: 70px;
-  }
-  .word-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-  .word-option-btn {
-    background: white;
-    border: 3px solid #E0E0E0;
-    border-radius: 18px;
-    padding: 22px 15px;
-    font-size: 26px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--text);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-    -webkit-tap-highlight-color: transparent;
-  }
-  .word-option-btn:active { transform: scale(0.95); }
-  .word-option-btn.correct-ans { background: #E8F5E9; border-color: var(--green); color: var(--green); }
-  .word-option-btn.wrong-ans { background: #FFEBEE; border-color: #EF9A9A; color: #C62828; }
+.feedback {
+  flex-shrink: 0;
+  text-align: center;
+  border-radius: var(--r);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  padding: var(--sp-xs) var(--sp-sm);
+  min-height: clamp(36px, 6vw, 52px);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--sp-xs);
+}
+.feedback.correct { background: #E8F5E9; color: var(--green); }
+.feedback.wrong   { background: #FFEBEE; color: #D32F2F; }
+.feedback.empty   { background: transparent; }
 
-  /* ===== GAME 4: 色と言葉 ===== */
-  .color-word-display {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-  }
-  .color-word-question { font-size: 18px; color: var(--text-light); margin-bottom: 15px; }
-  .color-word-text {
-    font-size: 72px;
-    font-weight: 900;
-    line-height: 1;
-    margin-bottom: 10px;
-  }
-  .color-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-  .color-option-btn {
-    border: 4px solid transparent;
-    border-radius: 18px;
-    padding: 22px;
-    font-size: 22px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    -webkit-tap-highlight-color: transparent;
-  }
-  .color-option-btn:active { transform: scale(0.95); }
-  .color-option-btn.correct-ans { border-color: white; box-shadow: 0 0 0 4px var(--green), 0 4px 12px rgba(0,0,0,0.15); }
-  .color-option-btn.wrong-ans { opacity: 0.5; }
+/* ===== GAME 1: 計算 ===== */
+.calc-display {
+  background: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--sp-md);
+  text-align: center;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  margin-bottom: var(--sp-sm);
+}
+.calc-q {
+  font-size: var(--fs-3xl);
+  font-weight: 900;
+  letter-spacing: clamp(2px,1vw,6px);
+  line-height: 1.1;
+}
+.calc-ans-wrap { margin-top: var(--sp-xs); }
+.calc-ans {
+  display: inline-block;
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--blue);
+  border-bottom: 3px solid var(--blue);
+  min-width: clamp(80px, 20vw, 160px);
+  padding-bottom: 4px;
+  min-height: clamp(30px, 5vw, 50px);
+}
 
-  /* ===== TIMER BAR ===== */
-  .timer-bar-wrap {
-    background: #E0E0E0;
-    border-radius: 10px;
-    height: 14px;
-    margin-bottom: 20px;
-    overflow: hidden;
-  }
-  .timer-bar {
-    height: 100%;
-    border-radius: 10px;
-    transition: width 1s linear, background 0.5s;
-    background: var(--green);
-  }
-  .timer-bar.warn { background: var(--gold); }
-  .timer-bar.danger { background: var(--primary); }
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(6px, 1.5vw, 12px);
+  flex: 1;
+  min-height: 0;
+}
+.num-btn {
+  background: #fff;
+  border: 2px solid #E0E0E0;
+  border-radius: var(--r);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+  transition: transform 0.08s;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0;
+}
+.num-btn:active { transform: scale(0.92); background: #F0F0F0; }
+.num-btn.del { background: #FFF3E0; border-color: #FFB74D; color: #E65100; font-size: var(--fs-sm); }
+.num-btn.ok  { background: var(--green); border-color: var(--green); color: #fff; font-size: var(--fs-sm); }
+.num-btn.ok:active { background: var(--green-dk); }
 
-  /* ===== PROGRESS ===== */
-  .progress-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  .dot {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: #E0E0E0;
-    transition: background 0.3s;
-  }
-  .dot.done { background: var(--green); }
-  .dot.wrong { background: var(--primary); }
-  .dot.current { background: var(--secondary); transform: scale(1.3); }
+/* ===== GAME 2: 神経衰弱 ===== */
+.mem-instruction {
+  background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  border-radius: var(--r);
+  padding: var(--sp-xs) var(--sp-md);
+  text-align: center;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: #1565C0;
+  flex-shrink: 0;
+  margin-bottom: var(--sp-sm);
+}
+.cards-grid {
+  display: grid;
+  gap: clamp(6px, 1.5vw, 12px);
+  flex: 1;
+  min-height: 0;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  align-content: stretch;
+}
+.cards-grid.g4  { grid-template-columns: repeat(2, 1fr); }
+.cards-grid.g8  { grid-template-columns: repeat(4, 1fr); }
 
-  /* ===== TOTAL SCORE ===== */
-  .total-score-bar {
-    background: white;
-    border-radius: var(--radius);
-    padding: 15px 24px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-  }
-  .total-score-bar span { font-size: 16px; color: var(--text-light); }
-  .total-score-bar strong { font-size: 24px; color: var(--primary); font-weight: 900; }
+.card-item {
+  border-radius: var(--r);
+  font-size: clamp(24px, 6vw, 48px);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: 3px solid transparent;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s;
+  min-height: 0;
+}
+.card-item:active:not(.matched) { transform: scale(0.93); }
+.card-item.hidden  { background: linear-gradient(135deg,#5C6BC0,#3F51B5); }
+.card-item.hidden::after { content: '?'; color: rgba(255,255,255,0.85); font-size: clamp(18px,4vw,32px); font-weight: 900; }
+.card-item.shown   { background: #FFF9C4; border-color: #FFD54F; }
+.card-item.matched { background: #E8F5E9; border-color: var(--green); cursor: default; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
-  /* ===== RESPONSIVE: TABLET (iPad) ===== */
-  @media (max-width: 768px) {
-    header { padding: 14px 18px; }
-    header h1 { font-size: 24px; }
-    header h1 span { font-size: 28px; }
-    .score-board { padding: 8px 14px; }
-    .score-board .value { font-size: 22px; }
+/* ===== GAME 3: 言葉当て ===== */
+.word-display {
+  background: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--sp-md);
+  text-align: center;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  margin-bottom: var(--sp-sm);
+}
+.word-hint  { font-size: var(--fs-sm); color: var(--muted); margin-bottom: var(--sp-xs); }
+.word-chars { font-size: var(--fs-3xl); font-weight: 900; letter-spacing: clamp(4px,2vw,10px); line-height: 1.1; }
 
-    .screen { padding: 20px 14px; }
+.word-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(6px, 1.5vw, 12px);
+  flex: 1;
+  min-height: 0;
+}
+.word-opt-btn {
+  background: #fff;
+  border: 2px solid #E0E0E0;
+  border-radius: var(--r);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+  transition: transform 0.1s;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0;
+}
+.word-opt-btn:active { transform: scale(0.94); }
+.word-opt-btn.correct-ans { background: #E8F5E9; border-color: var(--green); color: var(--green); }
+.word-opt-btn.wrong-ans   { background: #FFEBEE; border-color: #EF9A9A; color: #C62828; }
 
-    .home-greeting h2 { font-size: 22px; }
-    .home-greeting p { font-size: 16px; }
+/* ===== GAME 4: 色と文字 ===== */
+.color-display {
+  background: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--sp-md) var(--sp-md) var(--sp-sm);
+  text-align: center;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  margin-bottom: var(--sp-sm);
+}
+.color-q-label { font-size: var(--fs-sm); color: var(--muted); margin-bottom: var(--sp-xs); }
+.color-word    { font-size: var(--fs-4xl); font-weight: 900; line-height: 1; }
 
-    .game-grid { gap: 14px; }
-    .game-icon { font-size: 46px; margin-bottom: 8px; }
-    .game-card { padding: 22px 14px; border-radius: 20px; }
-    .game-card h3 { font-size: 18px; }
-    .game-card p { font-size: 13px; }
+.color-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(6px, 1.5vw, 12px);
+  flex: 1;
+  min-height: 0;
+}
+.color-opt-btn {
+  border: 3px solid transparent;
+  border-radius: var(--r);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.1s;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0;
+}
+.color-opt-btn:active { transform: scale(0.93); }
+.color-opt-btn.correct-ans { outline: 3px solid var(--green); outline-offset: 2px; }
+.color-opt-btn.wrong-ans   { opacity: 0.45; }
 
-    .game-header h2 { font-size: 20px; }
-    .game-status { padding: 12px 16px; gap: 10px; }
-    .status-item .value { font-size: 22px; }
-    .status-item .label { font-size: 12px; }
+/* ===== RESULT ===== */
+.result-box {
+  background: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--sp-xl) var(--sp-lg);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--sp-md);
+}
+.result-box .r-emoji  { font-size: clamp(48px,12vw,80px); line-height: 1; margin-bottom: var(--sp-sm); }
+.result-box h3        { font-size: var(--fs-xl); font-weight: 900; margin-bottom: var(--sp-xs); }
+.result-box .r-score  { font-size: var(--fs-4xl); font-weight: 900; color: var(--primary); line-height: 1; }
+.result-box .r-detail { font-size: var(--fs-sm); color: var(--muted); margin-top: var(--sp-xs); }
 
-    .calc-question { font-size: 42px; }
-    .calc-answer-display { font-size: 36px; }
-    .calc-display { padding: 24px 20px; }
-    .num-btn { font-size: 24px; padding: 18px 8px; }
-    .numpad { gap: 10px; max-width: 340px; }
-
-    .feedback { font-size: 20px; min-height: 60px; }
-
-    .result-box { padding: 28px 20px; }
-    .result-box .emoji { font-size: 60px; }
-    .result-box h3 { font-size: 24px; }
-    .result-box .score { font-size: 48px; }
-
-    .word-chars { font-size: 38px; letter-spacing: 6px; }
-    .word-option-btn { font-size: 22px; padding: 18px 12px; }
-
-    .color-word-text { font-size: 58px; }
-    .color-option-btn { font-size: 18px; padding: 18px; }
-
-    .card-item { font-size: 40px; border-radius: 14px; }
-    .card-item.hidden { font-size: 28px; }
-
-    .btn { padding: 14px 28px; font-size: 17px; }
-    .btn-lg { padding: 18px 36px; font-size: 20px; }
-    .total-score-bar .hint-text { display: none; }
-  }
-
-  /* ===== RESPONSIVE: SMARTPHONE ===== */
-  @media (max-width: 480px) {
-    header { padding: 12px 14px; }
-    header h1 { font-size: 20px; letter-spacing: 1px; }
-    header h1 span { font-size: 22px; }
-    .score-board { padding: 6px 12px; border-radius: 12px; }
-    .score-board .label { font-size: 11px; }
-    .score-board .value { font-size: 20px; }
-
-    .screen { padding: 14px 10px; }
-
-    .home-greeting { padding: 12px 0 18px; }
-    .home-greeting h2 { font-size: 20px; }
-    .home-greeting p { font-size: 14px; }
-
-    .game-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-    .game-icon { font-size: 38px; margin-bottom: 6px; }
-    .game-card { padding: 16px 10px; border-radius: 16px; border-width: 2px; }
-    .game-card h3 { font-size: 15px; margin-bottom: 4px; }
-    .game-card p { font-size: 12px; line-height: 1.4; }
-    .game-card .badge { font-size: 11px; padding: 3px 10px; margin-top: 8px; }
-
-    .game-header { margin-bottom: 14px; gap: 10px; }
-    .game-header h2 { font-size: 17px; }
-    .btn-back { padding: 10px 16px !important; font-size: 15px !important; }
-
-    .game-status { padding: 10px 12px; gap: 6px; margin-bottom: 14px; border-radius: 14px; }
-    .status-item .value { font-size: 20px; }
-    .status-item .label { font-size: 11px; }
-
-    .timer-bar-wrap { height: 10px; margin-bottom: 12px; }
-
-    .progress-dots { gap: 6px; margin-bottom: 12px; }
-    .dot { width: 12px; height: 12px; }
-
-    /* 計算ゲーム */
-    .calc-display { padding: 18px 14px; margin-bottom: 14px; border-radius: 18px; }
-    .calc-question { font-size: 34px; letter-spacing: 2px; margin-bottom: 14px; }
-    .calc-answer-display { font-size: 30px; min-height: 50px; min-width: 140px; }
-    .numpad { gap: 8px; max-width: 100%; }
-    .num-btn { font-size: 22px; padding: 16px 6px; border-radius: 14px; border-width: 2px; }
-    .num-btn.ok { font-size: 16px; }
-    .num-btn.del { font-size: 16px; }
-
-    /* フィードバック */
-    .feedback { font-size: 17px; min-height: 52px; padding: 12px; margin-bottom: 12px; border-radius: 14px; }
-
-    /* 神経衰弱 */
-    .memory-instruction { font-size: 16px; padding: 14px; margin-bottom: 14px; border-radius: 14px; }
-    .cards-grid { gap: 8px; margin-bottom: 14px; }
-    .card-item { font-size: 34px; border-radius: 12px; border-width: 3px; }
-    .card-item.hidden { font-size: 22px; }
-
-    /* 言葉当て */
-    .word-display { padding: 20px 16px; margin-bottom: 14px; border-radius: 18px; }
-    .word-hint { font-size: 15px; margin-bottom: 8px; }
-    .word-chars { font-size: 32px; letter-spacing: 4px; min-height: 50px; }
-    .word-options { gap: 10px; margin-bottom: 14px; }
-    .word-option-btn { font-size: 19px; padding: 16px 10px; border-radius: 14px; border-width: 2px; }
-
-    /* 色と文字 */
-    .color-word-display { padding: 24px 16px; margin-bottom: 14px; border-radius: 18px; }
-    .color-word-question { font-size: 15px; margin-bottom: 10px; }
-    .color-word-text { font-size: 52px; }
-    .color-options { gap: 10px; margin-bottom: 14px; }
-    .color-option-btn { font-size: 17px; padding: 16px 10px; border-radius: 14px; border-width: 3px; }
-
-    /* 結果画面 */
-    .result-box { padding: 24px 16px; border-radius: 20px; margin-bottom: 18px; }
-    .result-box .emoji { font-size: 54px; margin-bottom: 10px; }
-    .result-box h3 { font-size: 20px; margin-bottom: 8px; }
-    .result-box .score { font-size: 40px; }
-    .result-box .detail { font-size: 15px; }
-
-    .btn-lg { padding: 16px 28px !important; font-size: 18px !important; }
-
-    .total-score-bar { padding: 12px 16px; gap: 8px; border-radius: 14px; }
-    .total-score-bar span { font-size: 14px; }
-    .total-score-bar strong { font-size: 20px; }
-    .total-score-bar .hint-text { display: none; }
-  }
-
-  /* ===== VERY SMALL PHONES ===== */
-  @media (max-width: 360px) {
-    .calc-question { font-size: 28px; }
-    .num-btn { font-size: 19px; padding: 13px 4px; }
-    .word-option-btn { font-size: 16px; padding: 13px 8px; }
-    .color-word-text { font-size: 44px; }
-    .color-option-btn { font-size: 15px; padding: 13px 8px; }
-    .card-item { font-size: 28px; }
-  }
-
-  /* ===== LANDSCAPE PHONE ===== */
-  @media (max-height: 500px) and (orientation: landscape) {
-    header { padding: 8px 16px; position: relative; }
-    header h1 { font-size: 18px; }
-    .screen { padding: 10px 12px; }
-    .game-status { margin-bottom: 10px; padding: 8px 14px; }
-    .status-item .value { font-size: 18px; }
-    .calc-display { padding: 12px; margin-bottom: 10px; }
-    .calc-question { font-size: 28px; margin-bottom: 8px; }
-    .feedback { min-height: 44px; font-size: 16px; margin-bottom: 8px; }
-    .numpad { gap: 6px; }
-    .num-btn { padding: 12px 6px; font-size: 20px; }
-    .home-greeting { padding: 8px 0 12px; }
-    .game-grid { gap: 10px; margin-bottom: 12px; }
-    .game-card { padding: 12px 10px; }
-    .game-icon { font-size: 30px; margin-bottom: 4px; }
-  }
-
+.result-btns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  text-align: center;
+}
+.result-btns .total-line {
+  font-size: var(--fs-md); color: var(--muted);
+}
+.result-btns .total-line strong {
+  color: var(--primary); font-size: var(--fs-xl); font-weight: 900;
+}
+.btn-action {
+  border: none; border-radius: 50px;
+  padding: clamp(12px,2.5vw,18px) clamp(20px,5vw,40px);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.btn-action:active { transform: scale(0.95); }
+.btn-primary   { background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(232,98,42,0.4); }
+.btn-secondary { background: var(--blue);    color: #fff; box-shadow: 0 4px 14px rgba(58,143,191,0.35); }
+.btn-neutral   { background: #EBEBEB;        color: var(--text); }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header>
+<header id="appHeader">
   <h1><span>🧠</span> 脳トレ広場</h1>
   <div class="score-board">
-    <div class="label">合計スコア</div>
-    <div class="value" id="totalScore">0</div>
+    <div class="sb-label">合計スコア</div>
+    <div class="sb-val" id="totalScore">0</div>
   </div>
 </header>
 
@@ -634,58 +479,56 @@
     <h2>今日も脳を元気に！</h2>
     <p>4つのゲームから選んで挑戦しましょう</p>
   </div>
-
   <div class="game-grid">
     <div class="game-card c1" onclick="startGame('calc')">
       <span class="game-icon">🔢</span>
       <h3>計算ゲーム</h3>
-      <p>足し算・引き算の<br>計算をしよう</p>
+      <p>足し算・引き算<br>計算をしよう</p>
       <span class="badge">計算力</span>
     </div>
     <div class="game-card c2" onclick="startGame('memory')">
       <span class="game-icon">🃏</span>
       <h3>神経衰弱</h3>
-      <p>カードをめくって<br>同じ絵を見つけよう</p>
+      <p>カードをめくって<br>ペアを見つけよう</p>
       <span class="badge">記憶力</span>
     </div>
     <div class="game-card c3" onclick="startGame('word')">
       <span class="game-icon">📝</span>
-      <h3>言葉当てゲーム</h3>
+      <h3>言葉当て</h3>
       <p>ヒントから言葉を<br>当てよう</p>
       <span class="badge">語彙力</span>
     </div>
     <div class="game-card c4" onclick="startGame('color')">
       <span class="game-icon">🌈</span>
-      <h3>色と文字ゲーム</h3>
+      <h3>色と文字</h3>
       <p>文字の色を素早く<br>答えよう</p>
       <span class="badge">注意力</span>
     </div>
   </div>
-
-  <div class="total-score-bar">
+  <div class="home-footer">
     <span>🏆 今日のスコア</span>
     <strong id="homeTotalScore">0</strong>
     <span>点</span>
-    <span class="hint-text" style="margin-left:auto; font-size:14px;">続けると記録が伸びます！</span>
+    <span class="hint">続けると記録が伸びます！</span>
   </div>
 </div>
 
-<!-- ===== GAME 1: 計算 ===== -->
+<!-- ===== CALC GAME ===== -->
 <div id="calcScreen" class="screen">
-  <div class="game-header">
-    <button class="btn btn-back" onclick="goHome()" style="padding:14px 24px;font-size:18px;">← 戻る</button>
+  <div class="game-topbar">
+    <button class="btn-back" onclick="goHome()">← 戻る</button>
     <h2>🔢 計算ゲーム</h2>
   </div>
-  <div class="game-status">
-    <div class="status-item"><div class="label">問題</div><div class="value" id="calcQ">1/10</div></div>
-    <div class="status-item"><div class="label">スコア</div><div class="value" id="calcScore">0</div></div>
-    <div class="status-item"><div class="label">残り時間</div><div class="value" id="calcTime">30</div></div>
+  <div class="status-bar">
+    <div class="status-item"><div class="s-label">問題</div><div class="s-val" id="calcQ">1/10</div></div>
+    <div class="status-item"><div class="s-label">スコア</div><div class="s-val" id="calcScore">0</div></div>
+    <div class="status-item"><div class="s-label">残り時間</div><div class="s-val" id="calcTime">30</div></div>
   </div>
-  <div class="timer-bar-wrap"><div class="timer-bar" id="calcTimerBar" style="width:100%"></div></div>
+  <div class="timer-wrap"><div class="timer-track"><div class="timer-fill" id="calcTimerFill" style="width:100%"></div></div></div>
   <div class="progress-dots" id="calcDots"></div>
   <div class="calc-display">
-    <div class="calc-question" id="calcQuestion">12 + 7 = ?</div>
-    <div class="calc-answer-display" id="calcAnswerDisplay">　</div>
+    <div class="calc-q" id="calcQuestion">12 + 7 ＝ ？</div>
+    <div class="calc-ans-wrap"><span class="calc-ans" id="calcAns">　</span></div>
   </div>
   <div class="feedback empty" id="calcFeedback"></div>
   <div class="numpad">
@@ -703,36 +546,36 @@
     <button class="num-btn ok" onclick="calcSubmit()">✓ 決定</button>
   </div>
 </div>
-<div id="calcResult" class="screen"></div>
+<div id="calcResult" class="screen"><div class="screen-scroll" id="calcResultInner"></div></div>
 
-<!-- ===== GAME 2: 神経衰弱 ===== -->
+<!-- ===== MEMORY GAME ===== -->
 <div id="memoryScreen" class="screen">
-  <div class="game-header">
-    <button class="btn btn-back" onclick="goHome()" style="padding:14px 24px;font-size:18px;">← 戻る</button>
+  <div class="game-topbar">
+    <button class="btn-back" onclick="goHome()">← 戻る</button>
     <h2>🃏 神経衰弱</h2>
   </div>
-  <div class="game-status">
-    <div class="status-item"><div class="label">ペア</div><div class="value" id="memPairs">0/4</div></div>
-    <div class="status-item"><div class="label">スコア</div><div class="value" id="memScore">0</div></div>
-    <div class="status-item"><div class="label">めくった数</div><div class="value" id="memFlips">0</div></div>
+  <div class="status-bar">
+    <div class="status-item"><div class="s-label">ペア</div><div class="s-val" id="memPairs">0/4</div></div>
+    <div class="status-item"><div class="s-label">スコア</div><div class="s-val" id="memScore">0</div></div>
+    <div class="status-item"><div class="s-label">めくった数</div><div class="s-val" id="memFlips">0</div></div>
   </div>
-  <div class="memory-instruction" id="memInstruction">カードをめくってペアを見つけよう！</div>
-  <div class="cards-grid size-4" id="memGrid"></div>
+  <div class="mem-instruction" id="memInstruction">カードをめくってペアを見つけよう！</div>
+  <div class="cards-grid g4" id="memGrid"></div>
 </div>
-<div id="memResult" class="screen"></div>
+<div id="memResult" class="screen"><div class="screen-scroll" id="memResultInner"></div></div>
 
-<!-- ===== GAME 3: 言葉当て ===== -->
+<!-- ===== WORD GAME ===== -->
 <div id="wordScreen" class="screen">
-  <div class="game-header">
-    <button class="btn btn-back" onclick="goHome()" style="padding:14px 24px;font-size:18px;">← 戻る</button>
+  <div class="game-topbar">
+    <button class="btn-back" onclick="goHome()">← 戻る</button>
     <h2>📝 言葉当てゲーム</h2>
   </div>
-  <div class="game-status">
-    <div class="status-item"><div class="label">問題</div><div class="value" id="wordQ">1/8</div></div>
-    <div class="status-item"><div class="label">スコア</div><div class="value" id="wordScore">0</div></div>
-    <div class="status-item"><div class="label">残り時間</div><div class="value" id="wordTime">20</div></div>
+  <div class="status-bar">
+    <div class="status-item"><div class="s-label">問題</div><div class="s-val" id="wordQ">1/8</div></div>
+    <div class="status-item"><div class="s-label">スコア</div><div class="s-val" id="wordScore">0</div></div>
+    <div class="status-item"><div class="s-label">残り時間</div><div class="s-val" id="wordTime">20</div></div>
   </div>
-  <div class="timer-bar-wrap"><div class="timer-bar" id="wordTimerBar" style="width:100%"></div></div>
+  <div class="timer-wrap"><div class="timer-track"><div class="timer-fill" id="wordTimerFill" style="width:100%"></div></div></div>
   <div class="progress-dots" id="wordDots"></div>
   <div class="word-display">
     <div class="word-hint" id="wordHint">ヒント：</div>
@@ -741,635 +584,395 @@
   <div class="feedback empty" id="wordFeedback"></div>
   <div class="word-options" id="wordOptions"></div>
 </div>
-<div id="wordResult" class="screen"></div>
+<div id="wordResult" class="screen"><div class="screen-scroll" id="wordResultInner"></div></div>
 
-<!-- ===== GAME 4: 色と文字 ===== -->
+<!-- ===== COLOR GAME ===== -->
 <div id="colorScreen" class="screen">
-  <div class="game-header">
-    <button class="btn btn-back" onclick="goHome()" style="padding:14px 24px;font-size:18px;">← 戻る</button>
+  <div class="game-topbar">
+    <button class="btn-back" onclick="goHome()">← 戻る</button>
     <h2>🌈 色と文字ゲーム</h2>
   </div>
-  <div class="game-status">
-    <div class="status-item"><div class="label">問題</div><div class="value" id="colorQ">1/10</div></div>
-    <div class="status-item"><div class="label">スコア</div><div class="value" id="colorScore">0</div></div>
-    <div class="status-item"><div class="label">残り時間</div><div class="value" id="colorTime">10</div></div>
+  <div class="status-bar">
+    <div class="status-item"><div class="s-label">問題</div><div class="s-val" id="colorQ">1/10</div></div>
+    <div class="status-item"><div class="s-label">スコア</div><div class="s-val" id="colorScore">0</div></div>
+    <div class="status-item"><div class="s-label">残り時間</div><div class="s-val" id="colorTime">10</div></div>
   </div>
-  <div class="timer-bar-wrap"><div class="timer-bar" id="colorTimerBar" style="width:100%"></div></div>
+  <div class="timer-wrap"><div class="timer-track"><div class="timer-fill" id="colorTimerFill" style="width:100%"></div></div></div>
   <div class="progress-dots" id="colorDots"></div>
-  <div class="color-word-display">
-    <div class="color-word-question">この文字の「色」を選んでね</div>
-    <div class="color-word-text" id="colorWordText">あか</div>
+  <div class="color-display">
+    <div class="color-q-label">この文字の「色」を選んでね</div>
+    <div class="color-word" id="colorWord">あか</div>
   </div>
   <div class="feedback empty" id="colorFeedback"></div>
   <div class="color-options" id="colorOptions"></div>
 </div>
-<div id="colorResult" class="screen"></div>
+<div id="colorResult" class="screen"><div class="screen-scroll" id="colorResultInner"></div></div>
 
 <script>
-// ===== STATE =====
+// ===== PREVENT ZOOM =====
+document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+let _lt = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - _lt < 280) e.preventDefault();
+  _lt = now;
+}, { passive: false });
+
+// ===== CORE =====
 let totalScore = 0;
-let currentScreen = 'home';
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  currentScreen = id;
 }
-
 function goHome() {
-  clearAllTimers();
-  updateTotalDisplay();
-  showScreen('homeScreen');
+  clearAllTimers(); updateTotal(); showScreen('homeScreen');
 }
-
-function updateTotalDisplay() {
+function updateTotal() {
   document.getElementById('totalScore').textContent = totalScore;
   document.getElementById('homeTotalScore').textContent = totalScore;
 }
-
-function startGame(game) {
-  if (game === 'calc') initCalc();
-  else if (game === 'memory') initMemory();
-  else if (game === 'word') initWord();
-  else if (game === 'color') initColor();
+function startGame(g) {
+  if      (g==='calc')   initCalc();
+  else if (g==='memory') initMemory();
+  else if (g==='word')   initWord();
+  else if (g==='color')  initColor();
 }
-
 function clearAllTimers() {
-  if (calcTimer) clearInterval(calcTimer);
-  if (wordTimer) clearInterval(wordTimer);
-  if (colorTimer) clearInterval(colorTimer);
+  [calcTimer, wordTimer, colorTimer].forEach(t => t && clearInterval(t));
   calcTimer = wordTimer = colorTimer = null;
 }
 
-// ===== RESULT SCREEN =====
-function showResult(screenId, score, correct, total, emoji, msg) {
-  const maxScore = total * 10;
-  const pct = Math.round((score / Math.max(maxScore,1)) * 100);
-  totalScore += score;
-  updateTotalDisplay();
-
-  let grade, gradeColor;
-  if (pct >= 90) { grade = '🥇 すごい！完璧です！'; gradeColor = '#F5A623'; }
-  else if (pct >= 70) { grade = '🥈 よくできました！'; gradeColor = '#78909C'; }
-  else if (pct >= 50) { grade = '🥉 まあまあです！'; gradeColor = '#A1887F'; }
-  else { grade = '💪 もう一度挑戦！'; gradeColor = '#EF5350'; }
-
-  document.getElementById(screenId).innerHTML = `
-    <div class="game-header">
-      <button class="btn btn-back" onclick="goHome()" style="padding:14px 24px;font-size:18px;">← 戻る</button>
-      <h2>結果発表</h2>
-    </div>
+// ===== RESULT =====
+function showResult(innerId, gameKey, score, correct, total, emoji) {
+  totalScore += score; updateTotal();
+  const pct = Math.round(score / (total*10) * 100);
+  let grade, gc;
+  if      (pct >= 90) { grade='🥇 すごい！完璧です！'; gc='#F5A623'; }
+  else if (pct >= 70) { grade='🥈 よくできました！';   gc='#78909C'; }
+  else if (pct >= 50) { grade='🥉 まあまあです！';     gc='#A1887F'; }
+  else                { grade='💪 もう一度挑戦！';      gc='#EF5350'; }
+  document.getElementById(innerId).innerHTML = `
     <div class="result-box">
-      <div class="emoji">${emoji}</div>
-      <h3 style="color:${gradeColor}">${grade}</h3>
-      <div class="score">${score}<span style="font-size:28px">点</span></div>
-      <div class="detail">${correct}問正解 / ${total}問中</div>
+      <div class="r-emoji">${emoji}</div>
+      <h3 style="color:${gc}">${grade}</h3>
+      <div class="r-score">${score}<span style="font-size:0.45em">点</span></div>
+      <div class="r-detail">${correct}問正解 / ${total}問中</div>
     </div>
-    <div style="text-align:center; margin-bottom:20px;">
-      <div style="font-size:20px; color:#666; margin-bottom:20px;">合計スコア：<strong style="color:var(--primary);font-size:28px">${totalScore}</strong>点</div>
-      <button class="btn btn-primary btn-lg" onclick="startGame('${screenId.replace('Result','')}')">もう一度あそぶ</button>
-      <br><br>
-      <button class="btn btn-back" onclick="goHome()" style="padding:16px 32px;font-size:20px">ホームに戻る</button>
-    </div>
-  `;
-  showScreen(screenId);
+    <div class="result-btns">
+      <div class="total-line">合計スコア：<strong>${totalScore}</strong>点</div>
+      <button class="btn-action btn-primary" onclick="startGame('${gameKey}')">もう一度あそぶ</button>
+      <button class="btn-action btn-neutral" onclick="goHome()">ホームに戻る</button>
+    </div>`;
+  showScreen(innerId.replace('Inner',''));
 }
 
 // ===========================
-// GAME 1: 計算ゲーム
+// GAME 1: 計算
 // ===========================
-let calcState = {};
-let calcTimer = null;
+let calcState={}, calcTimer=null;
+function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
 
-function initCalc() {
-  calcState = {
-    questions: generateCalcQuestions(10),
-    current: 0,
-    score: 0,
-    correct: 0,
-    answer: '',
-    timeLeft: 30,
-    done: false
-  };
-  showScreen('calcScreen');
-  renderCalcQuestion();
-  startCalcTimer();
+function initCalc(){
+  const qs=[];
+  for(let i=0;i<10;i++){
+    const lv=Math.floor(i/3); let a,b,op,ans;
+    if(lv===0){a=rand(1,9);b=rand(1,9);op='+';ans=a+b;}
+    else if(lv===1){a=rand(10,30);b=rand(1,a);op='-';ans=a-b;}
+    else{a=rand(2,9);b=rand(2,9);op='×';ans=a*b;}
+    qs.push({text:`${a} ${op} ${b} ＝ ？`,answer:ans});
+  }
+  calcState={qs,cur:0,score:0,correct:0,ans:'',timeLeft:30,results:[],busy:false};
+  showScreen('calcScreen'); renderCalc(); startCalcTimer();
 }
-
-function generateCalcQuestions(n) {
-  const qs = [];
-  for (let i = 0; i < n; i++) {
-    const level = Math.floor(i / 3);
-    let a, b, op, ans;
-    if (level === 0) {
-      a = rand(1,9); b = rand(1,9); op = '+'; ans = a+b;
-    } else if (level === 1) {
-      a = rand(10,30); b = rand(1,a); op = '-'; ans = a-b;
-    } else {
-      a = rand(2,9); b = rand(2,9); op = '×'; ans = a*b;
+function renderCalc(){
+  const s=calcState,q=s.qs[s.cur];
+  document.getElementById('calcQ').textContent=`${s.cur+1}/10`;
+  document.getElementById('calcScore').textContent=s.score;
+  document.getElementById('calcQuestion').textContent=q.text;
+  document.getElementById('calcAns').textContent='　';
+  setFeedback('calcFeedback','','empty');
+  s.ans=''; s.busy=false;
+  renderDots('calcDots',10,s.cur,s.results);
+}
+function calcInput(v){ if(calcState.busy||calcState.ans.length>=4)return; calcState.ans+=v; document.getElementById('calcAns').textContent=calcState.ans; }
+function calcDel(){ if(calcState.busy)return; calcState.ans=calcState.ans.slice(0,-1); document.getElementById('calcAns').textContent=calcState.ans||'　'; }
+function calcSubmit(){
+  if(calcState.busy)return;
+  const s=calcState,q=s.qs[s.cur],ua=parseInt(s.ans);
+  if(isNaN(ua)){setFeedback('calcFeedback','数字を入れてね！','wrong');return;}
+  clearInterval(calcTimer);calcTimer=null; s.busy=true;
+  if(ua===q.answer){s.score+=10;s.correct++;s.results.push(true);setFeedback('calcFeedback','⭕ 正解！','correct');}
+  else{s.results.push(false);setFeedback('calcFeedback',`❌ 答えは ${q.answer}`,'wrong');}
+  document.getElementById('calcScore').textContent=s.score;
+  setTimeout(nextCalc,1200);
+}
+function nextCalc(){
+  calcState.cur++;
+  if(calcState.cur>=10) showResult('calcResultInner','calc',calcState.score,calcState.correct,10,'🔢');
+  else{renderCalc();startCalcTimer();}
+}
+function startCalcTimer(){
+  calcState.timeLeft=30; updateCalcTimer();
+  calcTimer=setInterval(()=>{
+    calcState.timeLeft--; updateCalcTimer();
+    if(calcState.timeLeft<=0){
+      clearInterval(calcTimer);calcTimer=null;
+      if(calcState.busy)return;
+      calcState.busy=true; calcState.results.push(false);
+      setFeedback('calcFeedback',`⏰ 時間切れ！答えは ${calcState.qs[calcState.cur].answer}`,'wrong');
+      setTimeout(nextCalc,1400);
     }
-    qs.push({ text: `${a} ${op} ${b} ＝ ？`, answer: ans });
-  }
-  return qs;
+  },1000);
 }
-
-function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
-
-function renderCalcQuestion() {
-  const s = calcState;
-  const q = s.questions[s.current];
-  document.getElementById('calcQ').textContent = `${s.current+1}/10`;
-  document.getElementById('calcScore').textContent = s.score;
-  document.getElementById('calcQuestion').textContent = q.text;
-  document.getElementById('calcAnswerDisplay').textContent = '　';
-  document.getElementById('calcFeedback').className = 'feedback empty';
-  document.getElementById('calcFeedback').textContent = '';
-  s.answer = '';
-  renderDots('calcDots', 10, s.current, s.results || []);
-  resetCalcTimer();
-}
-
-function renderDots(id, total, current, results) {
-  const el = document.getElementById(id);
-  el.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('div');
-    d.className = 'dot';
-    if (i < current) d.classList.add(results[i] ? 'done' : 'wrong');
-    else if (i === current) d.classList.add('current');
-    el.appendChild(d);
-  }
-}
-
-function calcInput(v) {
-  if (calcState.done) return;
-  if (calcState.answer.length >= 4) return;
-  calcState.answer += v;
-  document.getElementById('calcAnswerDisplay').textContent = calcState.answer;
-}
-
-function calcDel() {
-  calcState.answer = calcState.answer.slice(0,-1);
-  document.getElementById('calcAnswerDisplay').textContent = calcState.answer || '　';
-}
-
-function calcSubmit() {
-  if (calcState.done) return;
-  const s = calcState;
-  const q = s.questions[s.current];
-  const userAns = parseInt(s.answer);
-  if (isNaN(userAns)) { showFeedback('calcFeedback','数字を入れてね！',''); return; }
-
-  if (!s.results) s.results = [];
-
-  if (userAns === q.answer) {
-    s.score += 10; s.correct++;
-    s.results.push(true);
-    showFeedback('calcFeedback', '⭕ 正解！', 'correct');
-  } else {
-    s.results.push(false);
-    showFeedback('calcFeedback', `❌ 不正解 答えは ${q.answer}`, 'wrong');
-  }
-
-  document.getElementById('calcScore').textContent = s.score;
-  clearInterval(calcTimer); calcTimer = null;
-  setTimeout(() => nextCalcQuestion(), 1200);
-}
-
-function nextCalcQuestion() {
-  calcState.current++;
-  if (calcState.current >= 10) {
-    showResult('calcResult', calcState.score, calcState.correct, 10, '🔢', '計算ゲーム');
-  } else {
-    renderCalcQuestion();
-    startCalcTimer();
-  }
-}
-
-function startCalcTimer() {
-  calcState.timeLeft = 30;
-  updateCalcTimer();
-  calcTimer = setInterval(() => {
-    calcState.timeLeft--;
-    updateCalcTimer();
-    if (calcState.timeLeft <= 0) {
-      clearInterval(calcTimer); calcTimer = null;
-      if (!calcState.results) calcState.results = [];
-      calcState.results.push(false);
-      showFeedback('calcFeedback', `⏰ 時間切れ！答えは ${calcState.questions[calcState.current].answer}`, 'wrong');
-      setTimeout(() => nextCalcQuestion(), 1500);
-    }
-  }, 1000);
-}
-
-function resetCalcTimer() {
-  clearInterval(calcTimer); calcTimer = null;
-}
-
-function updateCalcTimer() {
-  const t = calcState.timeLeft;
-  document.getElementById('calcTime').textContent = t;
-  const bar = document.getElementById('calcTimerBar');
-  bar.style.width = (t/30*100)+'%';
-  bar.className = 'timer-bar' + (t<=10?' danger': t<=20?' warn':'');
+function updateCalcTimer(){
+  const t=calcState.timeLeft;
+  document.getElementById('calcTime').textContent=t;
+  const f=document.getElementById('calcTimerFill');
+  f.style.width=(t/30*100)+'%';
+  f.className='timer-fill'+(t<=10?' danger':t<=20?' warn':'');
 }
 
 // ===========================
 // GAME 2: 神経衰弱
 // ===========================
-let memState = {};
+let memState={};
+const memEmojis=['🐶','🐱','🐻','🦊','🐸','🦋','🌸','⭐','🍎','🍊','🎈','🎵'];
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 
-const memEmojis = ['🐶','🐱','🐻','🦊','🐸','🦋','🌸','⭐','🍎','🍊','🎈','🎵'];
-
-function initMemory() {
-  const level = 1; // start with 4 pairs
-  const pairs = 4;
-  const emojis = shuffle([...memEmojis]).slice(0, pairs);
-  const cards = shuffle([...emojis, ...emojis]).map((e,i) => ({
-    id: i, emoji: e, flipped: false, matched: false
-  }));
-
-  memState = {
-    cards,
-    flipped: [],
-    pairs,
-    matched: 0,
-    flips: 0,
-    score: 0,
-    locked: false
-  };
-
-  const grid = document.getElementById('memGrid');
-  grid.className = `cards-grid size-${pairs*2 <= 4 ? 4 : pairs*2 <= 9 ? 9 : 12}`;
-  document.getElementById('memPairs').textContent = `0/${pairs}`;
-  document.getElementById('memScore').textContent = '0';
-  document.getElementById('memFlips').textContent = '0';
-  document.getElementById('memInstruction').textContent = 'カードをめくってペアを見つけよう！';
-
-  renderMemCards();
-  showScreen('memoryScreen');
+function initMemory(){
+  const pairs=4;
+  const emojis=shuffle([...memEmojis]).slice(0,pairs);
+  const cards=shuffle([...emojis,...emojis]).map((e,i)=>({id:i,emoji:e,flipped:false,matched:false}));
+  memState={cards,flipped:[],pairs,matched:0,flips:0,score:0,locked:false};
+  document.getElementById('memGrid').className='cards-grid g4';
+  document.getElementById('memPairs').textContent=`0/${pairs}`;
+  document.getElementById('memScore').textContent='0';
+  document.getElementById('memFlips').textContent='0';
+  document.getElementById('memInstruction').textContent='カードをめくってペアを見つけよう！';
+  renderMemCards(); showScreen('memoryScreen');
 }
-
-function shuffle(arr) {
-  for (let i = arr.length-1; i > 0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
-  }
-  return arr;
-}
-
-function renderMemCards() {
-  const grid = document.getElementById('memGrid');
-  grid.innerHTML = '';
-  memState.cards.forEach((c, i) => {
-    const el = document.createElement('div');
-    el.className = 'card-item' + (c.matched ? ' matched' : c.flipped ? ' shown' : ' hidden');
-    if (c.matched || c.flipped) el.innerHTML = `<span class="emoji">${c.emoji}</span>`;
-    else el.innerHTML = `<span class="emoji" style="display:none">${c.emoji}</span>`;
-    el.onclick = () => flipCard(i);
+function renderMemCards(){
+  const grid=document.getElementById('memGrid');
+  grid.innerHTML='';
+  memState.cards.forEach((c,i)=>{
+    const el=document.createElement('div');
+    if(c.matched)      el.className='card-item matched';
+    else if(c.flipped) el.className='card-item shown';
+    else               el.className='card-item hidden';
+    if(c.matched||c.flipped) el.textContent=c.emoji;
+    el.onclick=()=>flipCard(i);
     grid.appendChild(el);
   });
 }
-
-function flipCard(i) {
-  const s = memState;
-  if (s.locked) return;
-  const c = s.cards[i];
-  if (c.matched || c.flipped) return;
-  if (s.flipped.length >= 2) return;
-
-  c.flipped = true;
-  s.flipped.push(i);
-  s.flips++;
-  document.getElementById('memFlips').textContent = s.flips;
+function flipCard(i){
+  const s=memState; if(s.locked)return;
+  const c=s.cards[i]; if(c.matched||c.flipped||s.flipped.length>=2)return;
+  c.flipped=true; s.flipped.push(i); s.flips++;
+  document.getElementById('memFlips').textContent=s.flips;
   renderMemCards();
-
-  if (s.flipped.length === 2) {
-    s.locked = true;
-    const [a, b] = s.flipped.map(idx => s.cards[idx]);
-    if (a.emoji === b.emoji) {
-      setTimeout(() => {
-        a.matched = b.matched = true;
-        a.flipped = b.flipped = false;
-        s.matched++;
-        s.flipped = [];
-        s.locked = false;
-        const pts = Math.max(20 - s.flips * 2, 5) * 10;
-        s.score += pts;
-        document.getElementById('memPairs').textContent = `${s.matched}/${s.pairs}`;
-        document.getElementById('memScore').textContent = s.score;
-        document.getElementById('memInstruction').textContent = `✨ ペア発見！+${pts}点`;
+  if(s.flipped.length===2){
+    s.locked=true;
+    const[a,b]=s.flipped.map(x=>s.cards[x]);
+    if(a.emoji===b.emoji){
+      setTimeout(()=>{
+        a.matched=b.matched=true; a.flipped=b.flipped=false;
+        s.matched++; s.flipped=[]; s.locked=false;
+        const pts=Math.max(20-s.flips*2,5)*10; s.score+=pts;
+        document.getElementById('memPairs').textContent=`${s.matched}/${s.pairs}`;
+        document.getElementById('memScore').textContent=s.score;
+        document.getElementById('memInstruction').textContent=`✨ ペア発見！+${pts}点`;
         renderMemCards();
-        if (s.matched >= s.pairs) {
-          setTimeout(() => showMemResult(), 800);
-        }
-      }, 400);
+        if(s.matched>=s.pairs) setTimeout(showMemResult,700);
+      },350);
     } else {
-      setTimeout(() => {
-        a.flipped = b.flipped = false;
-        s.flipped = [];
-        s.locked = false;
-        document.getElementById('memInstruction').textContent = '残念... もう一度！';
+      setTimeout(()=>{
+        a.flipped=b.flipped=false; s.flipped=[]; s.locked=false;
+        document.getElementById('memInstruction').textContent='残念... もう一度！';
         renderMemCards();
-      }, 900);
+      },800);
     }
   }
 }
-
-function showMemResult() {
-  const s = memState;
-  totalScore += s.score;
-  updateTotalDisplay();
-
-  let emoji = s.flips <= s.pairs * 2 + 2 ? '🥇' : s.flips <= s.pairs * 3 ? '🥈' : '🥉';
-  let msg = s.flips <= s.pairs * 2 + 2 ? '素晴らしい記憶力！' : 'よくできました！';
-
-  document.getElementById('memResult').innerHTML = `
-    <div class="game-header">
-      <button class="btn btn-back" onclick="goHome()" style="padding:14px 24px;font-size:18px;">← 戻る</button>
-      <h2>結果発表</h2>
-    </div>
+function showMemResult(){
+  const s=memState;
+  const emoji=s.flips<=s.pairs*2+2?'🥇':s.flips<=s.pairs*3?'🥈':'🥉';
+  totalScore+=s.score; updateTotal();
+  const pct=Math.min(100,Math.round(s.score/(s.pairs*100)*100));
+  let grade,gc;
+  if(pct>=90){grade='🥇 すごい！完璧です！';gc='#F5A623';}
+  else if(pct>=60){grade='🥈 よくできました！';gc='#78909C';}
+  else{grade='💪 もう一度挑戦！';gc='#EF5350';}
+  document.getElementById('memResultInner').innerHTML=`
     <div class="result-box">
-      <div class="emoji">${emoji}</div>
-      <h3>${msg}</h3>
-      <div class="score">${s.score}<span style="font-size:28px">点</span></div>
-      <div class="detail">${s.pairs}ペア達成 / めくった回数：${s.flips}回</div>
+      <div class="r-emoji">${emoji}</div>
+      <h3 style="color:${gc}">${grade}</h3>
+      <div class="r-score">${s.score}<span style="font-size:0.45em">点</span></div>
+      <div class="r-detail">${s.pairs}ペア達成 / めくった回数：${s.flips}回</div>
     </div>
-    <div style="text-align:center; margin-bottom:20px;">
-      <div style="font-size:20px; color:#666; margin-bottom:20px;">合計スコア：<strong style="color:var(--primary);font-size:28px">${totalScore}</strong>点</div>
-      <button class="btn btn-secondary btn-lg" onclick="startGame('memory')">もう一度あそぶ</button>
-      <br><br>
-      <button class="btn btn-back" onclick="goHome()" style="padding:16px 32px;font-size:20px">ホームに戻る</button>
-    </div>
-  `;
+    <div class="result-btns">
+      <div class="total-line">合計スコア：<strong>${totalScore}</strong>点</div>
+      <button class="btn-action btn-secondary" onclick="startGame('memory')">もう一度あそぶ</button>
+      <button class="btn-action btn-neutral" onclick="goHome()">ホームに戻る</button>
+    </div>`;
   showScreen('memResult');
 }
 
 // ===========================
-// GAME 3: 言葉当てゲーム
+// GAME 3: 言葉当て
 // ===========================
-let wordState = {};
-let wordTimer = null;
-
-const wordQuestions = [
-  { hint: '🐕 犬の鳴き声は？', chars: '＿＿', answer: 'わんわん', options: ['わんわん','にゃんにゃん','ぶーぶー','もーもー'] },
-  { hint: '🍎 赤くて甘い果物', chars: 'り＿ご', answer: 'りんご', options: ['りんご','みかん','バナナ','ぶどう'] },
-  { hint: '☀️ 空に輝く黄色い星', chars: 'た＿よ', answer: 'たいよう', options: ['たいよう','おつき','ほし','にじ'] },
-  { hint: '🌸 春に咲くピンクの花', chars: 'さ＿ら', answer: 'さくら', options: ['さくら','ばら','ひまわり','たんぽぽ'] },
-  { hint: '🚂 線路を走る乗り物', chars: 'で＿しゃ', answer: 'でんしゃ', options: ['でんしゃ','バス','ひこうき','ふね'] },
-  { hint: '❄️ 冬に空から降ってくる白いもの', chars: 'ゆ＿き', answer: 'ゆき', options: ['ゆき','あめ','かぜ','くも'] },
-  { hint: '🎵 耳で聞いて楽しむもの', chars: 'お＿がく', answer: 'おんがく', options: ['おんがく','えいが','ほん','え'] },
-  { hint: '👨‍⚕️ 病院で働く人', chars: 'い＿しゃ', answer: 'いしゃ', options: ['いしゃ','けいさつ','しょうぼう','せんせい'] },
+let wordState={},wordTimer=null;
+const wordQs=[
+  {hint:'🐕 犬の鳴き声は？',       chars:'＿＿',    answer:'わんわん', opts:['わんわん','にゃんにゃん','ぶーぶー','もーもー']},
+  {hint:'🍎 赤くて甘い果物',        chars:'り＿ご',  answer:'りんご',   opts:['りんご','みかん','バナナ','ぶどう']},
+  {hint:'☀️ 空に輝く黄色い星',      chars:'た＿よ',  answer:'たいよう', opts:['たいよう','おつき','ほし','にじ']},
+  {hint:'🌸 春に咲くピンクの花',    chars:'さ＿ら',  answer:'さくら',   opts:['さくら','ばら','ひまわり','たんぽぽ']},
+  {hint:'🚂 線路を走る乗り物',      chars:'で＿しゃ',answer:'でんしゃ', opts:['でんしゃ','バス','ひこうき','ふね']},
+  {hint:'❄️ 冬に降ってくる白いもの',chars:'ゆ＿き',  answer:'ゆき',     opts:['ゆき','あめ','かぜ','くも']},
+  {hint:'🎵 耳で聞いて楽しむもの',  chars:'お＿がく',answer:'おんがく', opts:['おんがく','えいが','ほん','え']},
+  {hint:'👨‍⚕️ 病院で働く人',         chars:'い＿しゃ',answer:'いしゃ',   opts:['いしゃ','けいさつ','しょうぼう','せんせい']},
 ];
-
-function initWord() {
-  wordState = {
-    questions: shuffle([...wordQuestions]),
-    current: 0,
-    score: 0,
-    correct: 0,
-    timeLeft: 20,
-    results: [],
-    answered: false
-  };
-  showScreen('wordScreen');
-  renderWordQuestion();
-  startWordTimer();
+function initWord(){
+  wordState={qs:shuffle([...wordQs]),cur:0,score:0,correct:0,timeLeft:20,results:[],busy:false};
+  showScreen('wordScreen'); renderWord(); startWordTimer();
 }
-
-function renderWordQuestion() {
-  const s = wordState;
-  const q = s.questions[s.current];
-  document.getElementById('wordQ').textContent = `${s.current+1}/8`;
-  document.getElementById('wordScore').textContent = s.score;
-  document.getElementById('wordHint').textContent = 'ヒント：' + q.hint;
-  document.getElementById('wordChars').textContent = q.chars;
-  document.getElementById('wordFeedback').className = 'feedback empty';
-  document.getElementById('wordFeedback').textContent = '';
-  s.answered = false;
-
-  const opts = document.getElementById('wordOptions');
-  opts.innerHTML = '';
-  shuffle([...q.options]).forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'word-option-btn';
-    btn.textContent = opt;
-    btn.onclick = () => wordAnswer(opt, btn);
-    opts.appendChild(btn);
+function renderWord(){
+  const s=wordState,q=s.qs[s.cur];
+  document.getElementById('wordQ').textContent=`${s.cur+1}/8`;
+  document.getElementById('wordScore').textContent=s.score;
+  document.getElementById('wordHint').textContent='ヒント：'+q.hint;
+  document.getElementById('wordChars').textContent=q.chars;
+  setFeedback('wordFeedback','','empty'); s.busy=false;
+  const opts=document.getElementById('wordOptions'); opts.innerHTML='';
+  shuffle([...q.opts]).forEach(o=>{
+    const btn=document.createElement('button');
+    btn.className='word-opt-btn'; btn.textContent=o;
+    btn.onclick=()=>wordAnswer(o,btn); opts.appendChild(btn);
   });
-
-  renderDots('wordDots', 8, s.current, s.results);
+  renderDots('wordDots',8,s.cur,s.results);
 }
-
-function wordAnswer(opt, btn) {
-  if (wordState.answered) return;
-  wordState.answered = true;
-  clearInterval(wordTimer); wordTimer = null;
-
-  const q = wordState.questions[wordState.current];
-  if (opt === q.answer) {
-    wordState.score += 10; wordState.correct++;
-    wordState.results.push(true);
-    btn.classList.add('correct-ans');
-    showFeedback('wordFeedback', '⭕ 正解！', 'correct');
-    document.getElementById('wordChars').textContent = q.answer;
-  } else {
-    wordState.results.push(false);
-    btn.classList.add('wrong-ans');
-    // highlight correct
-    document.querySelectorAll('.word-option-btn').forEach(b => {
-      if (b.textContent === q.answer) b.classList.add('correct-ans');
-    });
-    showFeedback('wordFeedback', `❌ 正解は「${q.answer}」`, 'wrong');
-    document.getElementById('wordChars').textContent = q.answer;
-  }
-
-  document.getElementById('wordScore').textContent = wordState.score;
-  setTimeout(() => nextWordQuestion(), 1500);
+function wordAnswer(opt,btn){
+  if(wordState.busy)return; wordState.busy=true;
+  clearInterval(wordTimer);wordTimer=null;
+  const q=wordState.qs[wordState.cur];
+  if(opt===q.answer){wordState.score+=10;wordState.correct++;wordState.results.push(true);btn.classList.add('correct-ans');setFeedback('wordFeedback','⭕ 正解！','correct');}
+  else{wordState.results.push(false);btn.classList.add('wrong-ans');document.querySelectorAll('.word-opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('correct-ans');});setFeedback('wordFeedback',`❌ 正解は「${q.answer}」`,'wrong');}
+  document.getElementById('wordChars').textContent=q.answer;
+  document.getElementById('wordScore').textContent=wordState.score;
+  setTimeout(nextWord,1400);
 }
-
-function nextWordQuestion() {
-  wordState.current++;
-  if (wordState.current >= 8) {
-    showResult('wordResult', wordState.score, wordState.correct, 8, '📝', '言葉当てゲーム');
-  } else {
-    renderWordQuestion();
-    startWordTimer();
-  }
+function nextWord(){
+  wordState.cur++;
+  if(wordState.cur>=8) showResult('wordResultInner','word',wordState.score,wordState.correct,8,'📝');
+  else{renderWord();startWordTimer();}
 }
-
-function startWordTimer() {
-  wordState.timeLeft = 20;
-  updateWordTimer();
-  wordTimer = setInterval(() => {
-    wordState.timeLeft--;
-    updateWordTimer();
-    if (wordState.timeLeft <= 0) {
-      clearInterval(wordTimer); wordTimer = null;
-      if (wordState.answered) return;
-      wordState.answered = true;
-      wordState.results.push(false);
-      const q = wordState.questions[wordState.current];
-      showFeedback('wordFeedback', `⏰ 時間切れ！答えは「${q.answer}」`, 'wrong');
-      document.getElementById('wordChars').textContent = q.answer;
-      setTimeout(() => nextWordQuestion(), 1500);
+function startWordTimer(){
+  wordState.timeLeft=20; updateWordTimer();
+  wordTimer=setInterval(()=>{
+    wordState.timeLeft--; updateWordTimer();
+    if(wordState.timeLeft<=0){
+      clearInterval(wordTimer);wordTimer=null;
+      if(wordState.busy)return; wordState.busy=true; wordState.results.push(false);
+      const q=wordState.qs[wordState.cur];
+      setFeedback('wordFeedback',`⏰ 時間切れ！答えは「${q.answer}」`,'wrong');
+      document.getElementById('wordChars').textContent=q.answer;
+      setTimeout(nextWord,1400);
     }
-  }, 1000);
+  },1000);
 }
-
-function updateWordTimer() {
-  const t = wordState.timeLeft;
-  document.getElementById('wordTime').textContent = t;
-  const bar = document.getElementById('wordTimerBar');
-  bar.style.width = (t/20*100)+'%';
-  bar.className = 'timer-bar' + (t<=5?' danger': t<=10?' warn':'');
+function updateWordTimer(){
+  const t=wordState.timeLeft;
+  document.getElementById('wordTime').textContent=t;
+  const f=document.getElementById('wordTimerFill');
+  f.style.width=(t/20*100)+'%';
+  f.className='timer-fill'+(t<=5?' danger':t<=10?' warn':'');
 }
 
 // ===========================
-// GAME 4: 色と文字ゲーム
+// GAME 4: 色と文字
 // ===========================
-let colorState = {};
-let colorTimer = null;
-
-const colorDefs = [
-  { name: 'あか', color: '#E53935' },
-  { name: 'あお', color: '#1E88E5' },
-  { name: 'きいろ', color: '#FDD835' },
-  { name: 'みどり', color: '#43A047' },
-  { name: 'むらさき', color: '#8E24AA' },
-  { name: 'オレンジ', color: '#FB8C00' },
+let colorState={},colorTimer=null;
+const colorDefs=[
+  {name:'あか',    color:'#E53935'},
+  {name:'あお',    color:'#1E88E5'},
+  {name:'きいろ',  color:'#F9A825'},
+  {name:'みどり',  color:'#43A047'},
+  {name:'むらさき',color:'#8E24AA'},
+  {name:'オレンジ',color:'#FB8C00'},
 ];
-
-function initColor() {
-  const questions = [];
-  for (let i = 0; i < 10; i++) {
-    const textColor = colorDefs[Math.floor(Math.random() * colorDefs.length)];
-    let displayColor;
-    do { displayColor = colorDefs[Math.floor(Math.random() * colorDefs.length)]; }
-    while (displayColor.name === textColor.name && Math.random() > 0.3);
-    questions.push({ text: textColor.name, displayColor: displayColor.color, answerColor: displayColor.name });
+function initColor(){
+  const qs=[];
+  for(let i=0;i<10;i++){
+    const tc=colorDefs[Math.floor(Math.random()*colorDefs.length)];
+    let dc; do{dc=colorDefs[Math.floor(Math.random()*colorDefs.length)];}while(dc.name===tc.name&&Math.random()>0.3);
+    qs.push({text:tc.name,displayColor:dc.color,answer:dc.name});
   }
-
-  colorState = {
-    questions,
-    current: 0,
-    score: 0,
-    correct: 0,
-    timeLeft: 10,
-    results: [],
-    answered: false
-  };
-
-  showScreen('colorScreen');
-  renderColorQuestion();
-  startColorTimer();
+  colorState={qs,cur:0,score:0,correct:0,timeLeft:10,results:[],busy:false};
+  showScreen('colorScreen'); renderColor(); startColorTimer();
 }
-
-function renderColorQuestion() {
-  const s = colorState;
-  const q = s.questions[s.current];
-  document.getElementById('colorQ').textContent = `${s.current+1}/10`;
-  document.getElementById('colorScore').textContent = s.score;
-  document.getElementById('colorWordText').textContent = q.text;
-  document.getElementById('colorWordText').style.color = q.displayColor;
-  document.getElementById('colorFeedback').className = 'feedback empty';
-  document.getElementById('colorFeedback').textContent = '';
-  s.answered = false;
-
-  const opts = document.getElementById('colorOptions');
-  opts.innerHTML = '';
-  const choices = shuffle([...colorDefs]).slice(0, 4);
-  if (!choices.find(c => c.name === q.answerColor)) {
-    choices[3] = colorDefs.find(c => c.name === q.answerColor);
-  }
-  shuffle(choices).forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'color-option-btn';
-    btn.style.background = c.color;
-    btn.textContent = c.name;
-    btn.onclick = () => colorAnswer(c.name, btn);
-    opts.appendChild(btn);
+function renderColor(){
+  const s=colorState,q=s.qs[s.cur];
+  document.getElementById('colorQ').textContent=`${s.cur+1}/10`;
+  document.getElementById('colorScore').textContent=s.score;
+  document.getElementById('colorWord').textContent=q.text;
+  document.getElementById('colorWord').style.color=q.displayColor;
+  setFeedback('colorFeedback','','empty'); s.busy=false;
+  const opts=document.getElementById('colorOptions'); opts.innerHTML='';
+  const choices=shuffle([...colorDefs]).slice(0,4);
+  if(!choices.find(c=>c.name===q.answer)) choices[3]=colorDefs.find(c=>c.name===q.answer);
+  shuffle(choices).forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='color-opt-btn'; btn.style.background=c.color; btn.textContent=c.name;
+    btn.onclick=()=>colorAnswer(c.name,btn); opts.appendChild(btn);
   });
-
-  renderDots('colorDots', 10, s.current, s.results);
+  renderDots('colorDots',10,s.cur,s.results);
 }
-
-function colorAnswer(name, btn) {
-  if (colorState.answered) return;
-  colorState.answered = true;
-  clearInterval(colorTimer); colorTimer = null;
-
-  const q = colorState.questions[colorState.current];
-  if (name === q.answerColor) {
-    colorState.score += 10; colorState.correct++;
-    colorState.results.push(true);
-    btn.classList.add('correct-ans');
-    showFeedback('colorFeedback', '⭕ 正解！', 'correct');
-  } else {
-    colorState.results.push(false);
-    btn.classList.add('wrong-ans');
-    document.querySelectorAll('.color-option-btn').forEach(b => {
-      if (b.textContent === q.answerColor) b.classList.add('correct-ans');
-    });
-    showFeedback('colorFeedback', `❌ 正解は「${q.answerColor}」`, 'wrong');
-  }
-
-  document.getElementById('colorScore').textContent = colorState.score;
-  setTimeout(() => nextColorQuestion(), 1300);
+function colorAnswer(name,btn){
+  if(colorState.busy)return; colorState.busy=true;
+  clearInterval(colorTimer);colorTimer=null;
+  const q=colorState.qs[colorState.cur];
+  if(name===q.answer){colorState.score+=10;colorState.correct++;colorState.results.push(true);btn.classList.add('correct-ans');setFeedback('colorFeedback','⭕ 正解！','correct');}
+  else{colorState.results.push(false);btn.classList.add('wrong-ans');document.querySelectorAll('.color-opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('correct-ans');});setFeedback('colorFeedback',`❌ 正解は「${q.answer}」`,'wrong');}
+  document.getElementById('colorScore').textContent=colorState.score;
+  setTimeout(nextColor,1200);
 }
-
-function nextColorQuestion() {
-  colorState.current++;
-  if (colorState.current >= 10) {
-    showResult('colorResult', colorState.score, colorState.correct, 10, '🌈', '色と文字ゲーム');
-  } else {
-    renderColorQuestion();
-    startColorTimer();
-  }
+function nextColor(){
+  colorState.cur++;
+  if(colorState.cur>=10) showResult('colorResultInner','color',colorState.score,colorState.correct,10,'🌈');
+  else{renderColor();startColorTimer();}
 }
-
-function startColorTimer() {
-  colorState.timeLeft = 10;
-  updateColorTimer();
-  colorTimer = setInterval(() => {
-    colorState.timeLeft--;
-    updateColorTimer();
-    if (colorState.timeLeft <= 0) {
-      clearInterval(colorTimer); colorTimer = null;
-      if (colorState.answered) return;
-      colorState.answered = true;
-      colorState.results.push(false);
-      const q = colorState.questions[colorState.current];
-      showFeedback('colorFeedback', `⏰ 時間切れ！答えは「${q.answerColor}」`, 'wrong');
-      setTimeout(() => nextColorQuestion(), 1500);
+function startColorTimer(){
+  colorState.timeLeft=10; updateColorTimer();
+  colorTimer=setInterval(()=>{
+    colorState.timeLeft--; updateColorTimer();
+    if(colorState.timeLeft<=0){
+      clearInterval(colorTimer);colorTimer=null;
+      if(colorState.busy)return; colorState.busy=true; colorState.results.push(false);
+      const q=colorState.qs[colorState.cur];
+      setFeedback('colorFeedback',`⏰ 時間切れ！答えは「${q.answer}」`,'wrong');
+      setTimeout(nextColor,1400);
     }
-  }, 1000);
+  },1000);
+}
+function updateColorTimer(){
+  const t=colorState.timeLeft;
+  document.getElementById('colorTime').textContent=t;
+  const f=document.getElementById('colorTimerFill');
+  f.style.width=(t/10*100)+'%';
+  f.className='timer-fill'+(t<=3?' danger':t<=6?' warn':'');
 }
 
-function updateColorTimer() {
-  const t = colorState.timeLeft;
-  document.getElementById('colorTime').textContent = t;
-  const bar = document.getElementById('colorTimerBar');
-  bar.style.width = (t/10*100)+'%';
-  bar.className = 'timer-bar' + (t<=3?' danger': t<=6?' warn':'');
+// ===== UTILS =====
+function setFeedback(id,msg,type){
+  const el=document.getElementById(id); el.textContent=msg; el.className='feedback '+type;
 }
-
-// ===== UTIL =====
-// Prevent pinch-zoom and double-tap zoom on mobile
-document.addEventListener('touchstart', function(e) {
-  if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
-
-let lastTap = 0;
-document.addEventListener('touchend', function(e) {
-  const now = Date.now();
-  if (now - lastTap < 300) e.preventDefault();
-  lastTap = now;
-}, { passive: false });
-function showFeedback(id, msg, type) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className = 'feedback ' + (type || 'empty');
+function renderDots(id,total,cur,results){
+  const el=document.getElementById(id); el.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i<cur?(results[i]?' done':' wrong'):i===cur?' current':'');
+    el.appendChild(d);
+  }
 }
 </script>
 </body>
