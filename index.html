@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#E8622A">
@@ -28,6 +28,10 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    touch-action: manipulation;
+  }
 
   body {
     font-family: 'Noto Sans JP', sans-serif;
@@ -1351,6 +1355,17 @@ function updateColorTimer() {
 }
 
 // ===== UTIL =====
+// Prevent pinch-zoom and double-tap zoom on mobile
+document.addEventListener('touchstart', function(e) {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+let lastTap = 0;
+document.addEventListener('touchend', function(e) {
+  const now = Date.now();
+  if (now - lastTap < 300) e.preventDefault();
+  lastTap = now;
+}, { passive: false });
 function showFeedback(id, msg, type) {
   const el = document.getElementById(id);
   el.textContent = msg;
